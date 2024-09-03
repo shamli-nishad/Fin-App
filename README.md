@@ -18,11 +18,11 @@ The application is built using a microservices architecture, ensuring that each 
 - **Service Registry:** Manages service discovery, allowing microservices to find and communicate with each other without hardcoding network locations.
 - **Configuration Server:** Centralized configuration management, ensuring consistent configuration across all microservices.
 - **Microservices:** Each microservice handles a specific business capability:
-- **User Service:** Manages user profiles and authentication.
-- **Transaction Service:** Handles all financial transactions and expense categorization.
-- **Budgeting Service:** Allows users to set and monitor budgets.
-- **Reporting Service:** Generates financial reports and analytics.
-- **Notification Service:** Manages user notifications and alerts.
+    - **User Service:** Manages user profiles and authentication.
+    - **Transaction Service:** Handles all financial transactions and expense categorization.
+    - **Budgeting Service:** Allows users to set and monitor budgets.
+    - **Reporting Service:** Generates financial reports and analytics.
+    - **Notification Service:** Manages user notifications and alerts.
 - **Logging and Tracing:** Integrated logging and tracing for monitoring, debugging, and performance optimization.
 - **Fault Tolerance:** Circuit breaker patterns and fallback mechanisms to handle failures gracefully.
 - **Security:** Comprehensive security layer to protect sensitive data and ensure secure communication.

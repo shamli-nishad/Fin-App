@@ -11,7 +11,10 @@ import com.sha.fin.app.transaction.entity.TransactionEntity;
 import com.sha.fin.app.transaction.model.TransactionType;
 import com.sha.fin.app.transaction.repository.TransactionRepository;
 
+import lombok.extern.log4j.Log4j2;
+
 @Service
+@Log4j2
 public class TransactionServiceImpl implements TransactionService {
 	
 	@Autowired
@@ -32,6 +35,7 @@ public class TransactionServiceImpl implements TransactionService {
             transactionRepository.save(existingTransaction);
         });
         
+        log.info("Transaction update {}", id);
         return transactionOptional;
 	}
 	
@@ -47,6 +51,7 @@ public class TransactionServiceImpl implements TransactionService {
 	public void deleteTransaction(Long id) {
 
 		transactionRepository.deleteById(id);
+		log.info("Transaction deleted {}", id);
 	}
 
 	@Override

@@ -21,8 +21,11 @@ import com.sha.fin.app.transaction.entity.TransactionEntity;
 import com.sha.fin.app.transaction.model.TransactionType;
 import com.sha.fin.app.transaction.service.TransactionService;
 
+import lombok.extern.log4j.Log4j2;
+
 @Controller()
-@RequestMapping("/transactions")
+@RequestMapping("/api/v1/transactions")
+@Log4j2
 public class TransactionController {
 
 	@Autowired
@@ -60,6 +63,7 @@ public class TransactionController {
 		
 		
 		if(null == userId || userId.isBlank()) {
+			log.info("userId given is blank");
 			return ResponseEntity.noContent().build();
 		}
 
@@ -76,6 +80,7 @@ public class TransactionController {
 		}
 
 		if (result.isEmpty()) {
+			log.info("No response for the given input {}",userId);
 			return ResponseEntity.noContent().build();
 		} else {
 			return ResponseEntity.ok(result);
