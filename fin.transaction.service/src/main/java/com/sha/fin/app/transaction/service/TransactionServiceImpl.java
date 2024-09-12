@@ -164,11 +164,13 @@ public class TransactionServiceImpl implements TransactionService {
 	
 	private void validateTransaction(TransactionEntity transaction) {
 		
-		Double postTransactionBalance = calculateCurrentBalance(transaction.getUserId());
+		Double currentTransactionBalance = calculateCurrentBalance(transaction.getUserId());
 		
-		log.info("Post transaction balance is {}", postTransactionBalance);
+		log.info("Balance before the transaction is {}", currentTransactionBalance);
 		
-		transaction.setPostTransactionBalance(calculateNewBalance(postTransactionBalance, transaction));
+		transaction.setPostTransactionBalance(calculateNewBalance(currentTransactionBalance, transaction));
+		
+		log.info("Balance after the transaction is {}", transaction.getPostTransactionBalance());
 		
 		// call the Budget Service and check if any budget criteria is met. If so, call alert service to send an alert.
 	}
