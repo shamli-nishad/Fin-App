@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sha.fin.app.budget.entity.BudgetEntity;
+import com.sha.fin.app.budget.model.BudgetCriteriaResponse;
 import com.sha.fin.app.budget.service.BudgetService;
 
 @RestController
@@ -55,7 +56,14 @@ public class BudgetController {
 		return budgetOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
 	}
+	
+	@GetMapping("/validate")
+	public ResponseEntity<BudgetCriteriaResponse> checkBudgetCriteriaMet (@RequestParam String userId, 
+			@RequestParam(required = false) String category, double amount){
+		return ResponseEntity.ok(budgetService.checkBudgetCriteriaMet(userId, category, amount));
+	}
 
+	
 	@PostMapping
 	public ResponseEntity<BudgetEntity> createBudget(@RequestBody BudgetEntity budget) {
 

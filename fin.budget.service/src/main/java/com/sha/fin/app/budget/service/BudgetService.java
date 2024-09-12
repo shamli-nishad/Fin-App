@@ -4,21 +4,24 @@ import java.util.List;
 import java.util.Optional;
 
 import com.sha.fin.app.budget.entity.BudgetEntity;
+import com.sha.fin.app.budget.model.BudgetCriteriaResponse;
 
 public interface BudgetService {
 	
-	public List<BudgetEntity> getAllBudgets();
+	List<BudgetEntity> getAllBudgets();
 	
-	public Optional<BudgetEntity> getBudgetById(Long id);
+	Optional<BudgetEntity> getBudgetById(Long id);
 	
-	public BudgetEntity createBudget(BudgetEntity budget);
+	BudgetEntity createBudget(BudgetEntity budget);
 	
-	public Optional<BudgetEntity> updateBudget(Long id, BudgetEntity budget);
+	Optional<BudgetEntity> updateBudget(Long id, BudgetEntity budget);
 	
-	public void deleteBudget(Long id);
+	void deleteBudget(Long id);
 
-	public Optional<List<BudgetEntity>> getBudgetByUserId(String userId);
+	Optional<List<BudgetEntity>> getBudgetByUserId(String userId);
 
-	public Optional<List<BudgetEntity>> getBudgetByUserIdAndCategory(String userId, String category);
+	Optional<List<BudgetEntity>> getBudgetByUserIdAndCategory(String userId, String category);
+	
+	BudgetCriteriaResponse checkBudgetCriteriaMet(String userId, String category, double amount);
 
 }
