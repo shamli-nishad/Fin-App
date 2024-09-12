@@ -23,8 +23,11 @@ public interface TransactionService {
 	
 	public List<TransactionEntity> getTransactionsByUserIdAndCategory(String userId, String category);
 	
-	public Double calculateBalance(String userId); 
+	public Double calculateCurrentBalance(String userId); 
 	
+	public Double calculateNewBalance(Double currentBalance, TransactionEntity newTransaction);
 	
+	public Double calculateNewBalance(TransactionEntity newTransaction);
+
 	
 }

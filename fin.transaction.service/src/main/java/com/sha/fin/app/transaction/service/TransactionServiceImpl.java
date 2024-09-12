@@ -1,13 +1,17 @@
 package com.sha.fin.app.transaction.service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.sha.fin.app.transaction.entity.TransactionEntity;
+import com.sha.fin.app.transaction.error.TransactionCustomException;
 import com.sha.fin.app.transaction.model.TransactionType;
 import com.sha.fin.app.transaction.repository.TransactionRepository;
 
@@ -22,9 +26,14 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public TransactionEntity addTransaction(TransactionEntity transaction) {
+		
+		transaction.setDate(Instant.now());
+		
+		validateTransaction(transaction);
+		
 		return transactionRepository.save(transaction);
 	}
-
+	
 	@Override
 	public Optional<TransactionEntity> updateTransaction(Long id, TransactionEntity transactionDetails) {
 
@@ -32,6 +41,7 @@ public class TransactionServiceImpl implements TransactionService {
 		
         transactionOptional.ifPresent(existingTransaction -> {
             copyNonNullProperties(transactionDetails, existingTransaction);
+//            validateTransaction(existingTransaction);
             transactionRepository.save(existingTransaction);
         });
         
@@ -56,27 +66,54 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public List<TransactionEntity> getTransactionsByUserId(String userId) {
-		return transactionRepository.findByUserId(userId);
+		List<TransactionEntity> result =  transactionRepository.findByUserId(userId);
+		
+		if(result.isEmpty()) {
+			throw new TransactionCustomException("No Transactions found for the given criteria", HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND.value());
+		} else {
+			return result;
+		}
 	}
 
 	@Override
 	public List<TransactionEntity> getTransactionsByUserIdAndDateRange(String userId, LocalDate startDate,
 			LocalDate endDate) {
-		return transactionRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
+		List<TransactionEntity> result =  transactionRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
+		
+		if(result.isEmpty()) {
+			throw new TransactionCustomException("No Transactions found for the given criteria", HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND.value());
+		} else {
+			return result;
+		}
 	}
 
 	@Override
 	public List<TransactionEntity> getTransactionsByUserIdAndType(String userId, TransactionType type) {
-		return transactionRepository.findByUserIdAndType(userId, type);
+		
+		List<TransactionEntity> result =  transactionRepository.findByUserIdAndType(userId, type);
+		
+		
+		if(result.isEmpty()) {
+			throw new TransactionCustomException("No Transactions found for the given criteria", HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND.value());
+		} else {
+			return result;
+		}
 	}
 
 	@Override
 	public List<TransactionEntity> getTransactionsByUserIdAndCategory(String userId, String category) {
-		return transactionRepository.findByUserIdAndCategory(userId, category);
+		
+		List<TransactionEntity> result = transactionRepository.findByUserIdAndCategory(userId, category);
+		
+		if(result.isEmpty()) {
+			throw new TransactionCustomException("No Transactions found for the given criteria", HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND.value());
+		} else {
+			return result;
+		}
 	}
 
 	@Override
-	public Double calculateBalance(String userId) {
+	public Double calculateCurrentBalance(String userId) {
 		
 		List<TransactionEntity> transactions = transactionRepository.findByUserId(userId);
 		
@@ -91,6 +128,49 @@ public class TransactionServiceImpl implements TransactionService {
         }
         return balance;
 	
+	}
+	
+	@Override
+	public Double calculateNewBalance(Double currentBalance, TransactionEntity newTransaction) {
+		
+        double balance = 0.0;
+        
+            if (newTransaction.getType() == TransactionType.INCOME) {
+                balance = currentBalance + newTransaction.getAmount();
+            } else {
+                balance = currentBalance - newTransaction.getAmount();
+            }
+            
+        return balance;
+	
+	}
+	
+	@Override
+	public Double calculateNewBalance(TransactionEntity newTransaction) {
+		
+		Double currentBalance = calculateCurrentBalance(newTransaction.getUserId());
+		
+        double balance = 0.0;
+        
+            if (newTransaction.getType() == TransactionType.INCOME) {
+                balance = currentBalance + newTransaction.getAmount();
+            } else {
+                balance = currentBalance - newTransaction.getAmount();
+            }
+            
+        return balance;
+	
+	}
+	
+	private void validateTransaction(TransactionEntity transaction) {
+		
+		Double postTransactionBalance = calculateCurrentBalance(transaction.getUserId());
+		
+		log.info("Post transaction balance is {}", postTransactionBalance);
+		
+		transaction.setPostTransactionBalance(calculateNewBalance(postTransactionBalance, transaction));
+		
+		// call the Budget Service and check if any budget criteria is met. If so, call alert service to send an alert.
 	}
 
 }

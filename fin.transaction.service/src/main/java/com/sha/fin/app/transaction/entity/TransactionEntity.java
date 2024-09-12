@@ -1,5 +1,6 @@
 package com.sha.fin.app.transaction.entity;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import com.sha.fin.app.transaction.model.TransactionType;
@@ -36,11 +37,13 @@ public class TransactionEntity {
 	private double amount;
 	
 	@Column(nullable =  false)
-	private LocalDate date;
+	private Instant date;
 	
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
 	private TransactionType type;
+    
+    private double postTransactionBalance;
 	
 	private String category;
 
