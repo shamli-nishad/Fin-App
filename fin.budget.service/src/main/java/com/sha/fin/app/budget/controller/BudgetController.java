@@ -59,7 +59,7 @@ public class BudgetController {
 	
 	@GetMapping("/validate")
 	public ResponseEntity<BudgetCriteriaResponse> checkBudgetCriteriaMet (@RequestParam String userId, 
-			@RequestParam(required = false) String category, double amount){
+			@RequestParam String category, @RequestParam double amount){
 		return ResponseEntity.ok(budgetService.checkBudgetCriteriaMet(userId, category, amount));
 	}
 

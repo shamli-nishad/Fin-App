@@ -5,13 +5,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.sha.fin.app.transaction.entity.TransactionEntity;
 import com.sha.fin.app.transaction.error.TransactionCustomException;
+import com.sha.fin.app.transaction.external.client.FinBudgetServiceClient;
+import com.sha.fin.app.transaction.external.model.BudgetCriteriaResponse;
 import com.sha.fin.app.transaction.model.TransactionType;
 import com.sha.fin.app.transaction.repository.TransactionRepository;
 
@@ -23,6 +24,9 @@ public class TransactionServiceImpl implements TransactionService {
 	
 	@Autowired
 	TransactionRepository transactionRepository;
+	
+	@Autowired
+	FinBudgetServiceClient finBudgetServiceClient;
 
 	@Override
 	public TransactionEntity addTransaction(TransactionEntity transaction) {
@@ -172,6 +176,9 @@ public class TransactionServiceImpl implements TransactionService {
 		
 		log.info("Balance after the transaction is {}", transaction.getPostTransactionBalance());
 		
+		BudgetCriteriaResponse budgetList = finBudgetServiceClient.checkBudgetCriteriaMet(transaction.getUserId(), transaction.getCategory(), transaction.getAmount()).getBody();
+//				getBudgetByUserId(transaction.getUserId(), transaction.getCategory()).getBody();
+		log.info(budgetList.getCriteriaStatus());
 		// call the Budget Service and check if any budget criteria is met. If so, call alert service to send an alert.
 	}
 
